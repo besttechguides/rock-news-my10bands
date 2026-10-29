@@ -580,25 +580,12 @@ function bindPosterEvents() {
     }
   });
 
-  document.getElementById('shareX').addEventListener('click', async () => {
+  document.getElementById('shareX').addEventListener('click', () => {
     if (!window.posterBlob) return;
-    const file = new File([window.posterBlob], 'rocknews-my10bands-poster.png', { type: 'image/png' });
     const text = buildShareText();
-
-    // Prefer native share so the image can be attached
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({ files: [file], text, title: 'My 10 Bands' });
-        return;
-      } catch (e) {
-        if (e.name === 'AbortError') return;
-      }
-    }
-
-    // Fallback: open X with text only + remind to attach image
     const encoded = encodeURIComponent(text);
-    window.open(`https://twitter.com/intent/tweet?text=${encoded}`, '_blank');
-    alert('X can’t attach the image from a link. Download the poster and add it to your post.');
+    window.open(`https://x.com/intent/post?text=${encoded}`, '_blank', 'noopener,noreferrer');
+    alert('X is open with your caption. Download the poster and attach the PNG to the post.');
   });
 
   document.getElementById('copyText').addEventListener('click', () => {
