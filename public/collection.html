@@ -811,11 +811,13 @@ async function createPoster() {
       ctx.textBaseline = 'alphabetic';
       ctx.fillText(name, W/2, H - 40*scale);
     }
-    ctx.fillStyle = mutedColor;
-    ctx.font = `${12*scale}px system-ui, sans-serif`;
     ctx.fillStyle = '#e3242b';
-    ctx.font = `700 ${14*scale}px system-ui, sans-serif`;
-    ctx.fillText('rocknews.co.uk  ·  Rock News UK  ·  My 10 Bands', W/2, H - 16*scale);
+    ctx.font = `800 ${22*scale}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('www.RockNews.co.uk', W/2, H - 42*scale);
+    ctx.fillStyle = textColor;
+    ctx.font = `800 ${16*scale}px system-ui, sans-serif`;
+    ctx.fillText('The home of Rock', W/2, H - 18*scale);
 
     const dataUrl = canvas.toDataURL('image/png');
     document.getElementById('posterPreview').src = dataUrl;
