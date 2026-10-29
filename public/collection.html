@@ -764,9 +764,13 @@ async function createPoster() {
     const gap = 14 * scale;
     const cols = 5;
     const rows = 2;
+    const startY = 110 * scale;
+    const footerH = 160 * scale;
     const gridW = W - margin * 2;
-    const tile = (gridW - gap * (cols - 1)) / cols;
-    const startY = 130 * scale;
+    const gridH = H - startY - footerH;
+    let tile = (gridW - gap * (cols - 1)) / cols;
+    const maxTileH = (gridH - gap * (rows - 1)) / rows;
+    if (maxTileH < tile) tile = maxTileH;
 
     for (let i = 0; i < TOTAL; i++) {
       const col = i % cols;
@@ -809,15 +813,15 @@ async function createPoster() {
       ctx.font = `600 ${18*scale}px system-ui, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
-      ctx.fillText(name, W/2, H - 72*scale);
+      ctx.fillText(name, W/2, H - 115*scale);
     }
     ctx.fillStyle = '#e3242b';
-    ctx.font = `800 ${22*scale}px system-ui, sans-serif`;
+    ctx.font = `900 ${48*scale}px system-ui, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('www.RockNews.co.uk', W/2, H - 42*scale);
+    ctx.fillText('www.RockNews.co.uk', W/2, H - 70*scale);
     ctx.fillStyle = textColor;
-    ctx.font = `800 ${16*scale}px system-ui, sans-serif`;
-    ctx.fillText('The home of Rock', W/2, H - 18*scale);
+    ctx.font = `800 ${32*scale}px system-ui, sans-serif`;
+    ctx.fillText('The home of Rock', W/2, H - 28*scale);
 
     const dataUrl = canvas.toDataURL('image/png');
     document.getElementById('posterPreview').src = dataUrl;
