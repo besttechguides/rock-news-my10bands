@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My 10 Bands — Rock News UK</title>
+<meta name="description" content="Pick the 10 bands that changed your life and share your poster. A Rock News UK project.">
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #1a1816;
+    --card: #221f1c;
+    --text: #f5f2ee;
+    --muted: #a39e96;
+    --accent: #e3242b;
+    --border: #2e2a26;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    background: #161413;
+    border-radius: 50%;
+    border: 1px solid #333;
+    display: grid;
+    place-items: center;
+    font-size: 0.7rem;
+  }
+  .hero {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    letter-spacing: -1px;
+    margin-bottom: 0.5rem;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 1.1rem;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .vinyl-label {
+    font-family: "Courier New", monospace;
+    color: var(--accent);
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    margin-top: 1rem;
+  }
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 4rem;
+  }
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .count { color: var(--muted); font-weight: 400; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .slot {
+    aspect-ratio: 1;
+    background: var(--card);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .slot:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .slot.filled { border-style: solid; border-color: #333; }
+  .slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .slot-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    color: white;
+    padding: 1.5rem 0.5rem 0.6rem;
+    font-weight: 700;
+    font-size: 0.85rem;
+    line-height: 1.2;
+  }
+  .slot-num {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 2;
+  }
+  .slot-label { color: var(--muted); font-size: 0.85rem; padding: 0 8px; }
+  .slot-remove {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: none;
+    z-index: 3;
+  }
+  .slot.filled:hover .slot-remove { display: block; }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 700px) { .controls { grid-template-columns: 1fr; } }
+  .control-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.4rem; }
+  input[type="text"] {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 0.9rem;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  .themes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .theme-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+  }
+  .theme-btn.active { border-color: var(--accent); outline: 2px solid var(--accent); }
+  .btn {
+    background: var(--accent);
+    color: #111;
+    border: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn:hover:not(:disabled) { opacity: 0.9; }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .modal-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .close-btn { background: none; border: none; color: var(--muted); font-size: 1.5rem; cursor: pointer; }
+  .search-box { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .results { overflow-y: auto; padding: 0.5rem; flex: 1; }
+  .result {
+    display: flex;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    align-items: center;
+  }
+  .result:hover { background: var(--card); }
+  .result img {
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #333;
+  }
+  .result-info { flex: 1; min-width: 0; }
+  .result-title { font-weight: 600; }
+  .result-meta { color: var(--muted); font-size: 0.85rem; }
+  .loading, .empty { text-align: center; padding: 2rem; color: var(--muted); }
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="https://www.rocknews.co.uk/" style="color:inherit;text-decoration:none">
+    <div class="brand-icon" style="background:#e3242b;border-color:#e3242b;color:#fff;font-weight:800">RN</div>
+    <span style="text-transform:uppercase;letter-spacing:1px">Rock <span style="color:#e3242b">News</span></span>
+  </a>
+  <div style="color:var(--muted);font-size:0.85rem;letter-spacing:1px">MY 10 BANDS</div>
+</header>
+
+<div class="hero">
+  <h1 id="heroTitle">Pick the 10 bands that changed your life.</h1>
+  <p id="heroSub">Search for the artists and bands that shaped you, arrange them, and download a poster to share.</p>
+  <div class="vinyl-label" id="heroLabel">MY 10 BANDS · BY ROCK NEWS UK</div>
+</div>
+
+<main>
+  <div class="section-title">
+    Your bands
+    <span class="count" id="count">0 / 10</span>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <div class="controls">
+    <div class="control-card">
+      <label for="name">Name or @handle (optional)</label>
+      <input type="text" id="name" placeholder="Your name" maxlength="40">
+    </div>
+    <div class="control-card">
+      <label>Background</label>
+      <div class="themes" id="themes"></div>
+    </div>
+  </div>
+
+  <button class="btn" id="createBtn" disabled>Create poster</button>
+  <a class="btn btn-secondary" id="makeOwn" href="/" style="display:none;text-align:center;text-decoration:none;margin-top:10px">Make your own My 10 Bands</a>
+</main>
+
+<footer>
+  Artist data from <a href="https://musicbrainz.org" target="_blank">MusicBrainz</a> · Photos via Wikipedia<br>
+  <a href="https://www.rocknews.co.uk/">Rock News UK</a> · rocknews.co.uk
+</footer>
+
+<div class="modal-overlay" id="posterModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h2>Your poster</h2>
+      <button class="close-btn" id="closePosterModal">&times;</button>
+    </div>
+    <div style="padding:1rem; text-align:center; background:#111;">
+      <img id="posterPreview" alt="Your poster" style="max-width:100%; border-radius:8px; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+    </div>
+    <div style="padding:1rem; display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; gap:10px;">
+        <button class="btn" id="shareNative" style="flex:1; background:#111; color:#fff;">Share</button>
+        <button class="btn btn-secondary" id="downloadPoster" style="flex:1;">Download poster</button>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-secondary" id="shareX" style="flex:1; font-size:0.9rem;">Post on X</button>
+        <button class="btn btn-secondary" id="copyText" style="flex:1; font-size:0.9rem;">Copy text</button>
+      </div>
+      <div id="shareLinkRow" style="display:flex; gap:8px;">
+        <input type="text" id="shareLink" readonly placeholder="Creating share link…" style="flex:2;font-size:0.85rem">
+        <button class="btn" id="copyLink" style="flex:1; font-size:0.9rem;" disabled>Copy link</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Choose band</h2>
+      <button class="close-btn" id="closeModal">&times;</button>
+    </div>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search band or artist..." autofocus>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'rn-my10bands-v1';
+const SHARE_MATCH = location.pathname.match(/^\/p\/([A-Za-z0-9_-]{4,20})\/?$/);
+const SHARE_ID = SHARE_MATCH ? SHARE_MATCH[1] : null;
+let shareUrl = null;
+const TOTAL = 10;
+const slots = Array(TOTAL).fill(null);
+let activeSlot = null;
+let searchTimeout = null;
+
+const themes = [
+  { id: 'blood', name: 'Blood', gradient: 'linear-gradient(145deg, #5a0a0e, #140203)' },
+  { id: 'wood', name: 'Wood', gradient: 'linear-gradient(145deg, #4a3428, #2c1e16)' },
+  { id: 'paper', name: 'Paper', gradient: 'linear-gradient(145deg, #f8f4ec, #e8e0d0)' },
+  { id: 'dark', name: 'Dark', gradient: 'linear-gradient(145deg, #1a1a1a, #0a0a0a)' },
+  { id: 'neon', name: 'Neon', gradient: 'linear-gradient(145deg, #120a20, #0a0810)' },
+  { id: 'cream', name: 'Cream', gradient: 'linear-gradient(145deg, #fffef8, #f0e8d8)' },
+];
+let currentTheme = themes[0];
+const THEME_COLORS = { blood:['#5a0a0e','#140203'], wood:['#4a3428','#2c1e16'], paper:['#f8f4ec','#e8e0d0'], dark:['#1a1a1a','#0a0a0a'], neon:['#1a0a28','#0a0818'], cream:['#fffef8','#f0e8d8'] };
+
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+const createBtn = document.getElementById('createBtn');
+const modal = document.getElementById('modal');
+const searchInput = document.getElementById('searchInput');
+const resultsEl = document.getElementById('results');
+const nameInput = document.getElementById('name');
+const themesEl = document.getElementById('themes');
+
+async function init() {
+  if (SHARE_ID) { await loadShared(); return; }
+  loadState();
+  renderGrid();
+  renderThemes();
+  updateCount();
+  bindEvents();
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data.slots) data.slots.forEach((s, i) => { if (s && i < TOTAL) slots[i] = s; });
+      if (data.name) nameInput.value = data.name;
+      if (data.theme) {
+        const t = themes.find(t => t.id === data.theme);
+        if (t) currentTheme = t;
+      }
+    }
+  } catch (e) {}
+}
+
+async function loadShared() {
+  document.getElementById('heroTitle').textContent = 'Loading collection…';
+  try {
+    const res = await fetch('/api/share?id=' + encodeURIComponent(SHARE_ID));
+    if (!res.ok) throw new Error('not found');
+    const d = await res.json();
+    d.bands.forEach((b, i) => { if (i < TOTAL) slots[i] = b; });
+    const t = themes.find(t => t.id === d.theme); if (t) currentTheme = t;
+    shareUrl = location.origin + '/p/' + SHARE_ID;
+    document.getElementById('heroTitle').textContent = 'The 10 bands that changed their life.';
+    document.getElementById('heroSub').textContent = 'A My 10 Bands collection on Rock News UK. Regenerate the poster or make your own.';
+  } catch (e) {
+    document.getElementById('heroTitle').textContent = 'Collection not found.';
+    document.getElementById('heroSub').textContent = 'This link may be wrong. Make your own instead.';
+  }
+  document.querySelector('.controls').style.display = 'none';
+  document.getElementById('makeOwn').style.display = 'block';
+  createBtn.textContent = 'Regenerate poster';
+  renderGrid(true);
+  countEl.textContent = slots.filter(Boolean).length + ' / ' + TOTAL;
+  createBtn.disabled = slots.filter(Boolean).length < TOTAL;
+  bindEvents(true);
+}
+
+async function createShareLink() {
+  if (SHARE_ID) return shareUrl;
+  const res = await fetch('/api/share', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ theme: currentTheme.id, bands: slots.map(b => ({ id: b.id, name: b.name, image: b.image || null })) }) });
+  if (!res.ok) throw new Error('share failed');
+  const d = await res.json();
+  return location.origin + '/p/' + d.id;
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    slots,
+    name: nameInput.value,
+    theme: currentTheme.id
+  }));
+}
+
+function renderGrid(readOnly) {
+  grid.innerHTML = '';
+  slots.forEach((band, i) => {
+    const el = document.createElement('div');
+    el.className = 'slot' + (band ? ' filled' : '');
+    if (band) {
+      const imgHtml = band.image ? `<img src="${band.image}" alt="${escapeHtml(band.name)}">` : '';
+      el.innerHTML = `
+        <span class="slot-num">${String(i+1).padStart(2,'0')}</span>
+        ${imgHtml}
+        <div class="slot-name">${escapeHtml(band.name)}</div>
+        ${readOnly ? '' : `<button class="slot-remove" data-index="${i}">×</button>`}
+      `;
+    } else {
+      el.innerHTML = `
+        <span class="slot-num">${String(i+1).padStart(2,'0')}</span>
+        <div class="slot-label">Choose band</div>
+      `;
+    }
+    if (!readOnly) el.addEventListener('click', (e) => {
+      if (e.target.classList.contains('slot-remove')) return;
+      openSearch(i);
+    });
+    grid.appendChild(el);
+  });
+  grid.querySelectorAll('.slot-remove').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      slots[+btn.dataset.index] = null;
+      renderGrid();
+      updateCount();
+      saveState();
+    });
+  });
+}
+
+function updateCount() {
+  const filled = slots.filter(Boolean).length;
+  countEl.textContent = `${filled} / ${TOTAL}`;
+  createBtn.disabled = filled < TOTAL;
+}
+
+function renderThemes() {
+  themesEl.innerHTML = '';
+  themes.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'theme-btn' + (t.id === currentTheme.id ? ' active' : '');
+    btn.style.background = t.gradient;
+    btn.title = t.name;
+    btn.addEventListener('click', () => {
+      currentTheme = t;
+      renderThemes();
+      saveState();
+    });
+    themesEl.appendChild(btn);
+  });
+}
+
+function openSearch(index) {
+  activeSlot = index;
+  modal.classList.add('open');
+  searchInput.value = '';
+  resultsEl.innerHTML = '<div class="empty">Type to search bands</div>';
+  setTimeout(() => searchInput.focus(), 50);
+}
+
+function closeSearch() {
+  modal.classList.remove('open');
+  activeSlot = null;
+}
+
+function bindEvents(readOnly) {
+  document.getElementById('copyLink').addEventListener('click', () => {
+    const v = document.getElementById('shareLink').value; if (!v) return;
+    navigator.clipboard.writeText(v).then(() => { const b = document.getElementById('copyLink'); b.textContent = 'Copied!'; setTimeout(() => b.textContent = 'Copy link', 1500); });
+  });
+  createBtn.addEventListener('click', createPoster);
+  document.getElementById('closePosterModal').addEventListener('click', () => document.getElementById('posterModal').classList.remove('open'));
+  if (readOnly) { bindPosterEvents(); return; }
+  document.getElementById('closeModal').addEventListener('click', closeSearch);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeSearch(); });
+  searchInput.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    const q = searchInput.value.trim();
+    if (q.length < 2) {
+      resultsEl.innerHTML = '<div class="empty">Type at least 2 characters</div>';
+      return;
+    }
+    resultsEl.innerHTML = '<div class="loading">Searching…</div>';
+    searchTimeout = setTimeout(() => searchBands(q), 350);
+  });
+  nameInput.addEventListener('input', saveState);
+  bindPosterEvents();
+}
+
+function bindPosterEvents() {
+  document.getElementById('posterModal').addEventListener('click', (e) => {
+    if (e.target.id === 'posterModal') document.getElementById('posterModal').classList.remove('open');
+  });
+
+  document.getElementById('downloadPoster').addEventListener('click', () => {
+    if (!window.posterBlob) return;
+    const link = document.createElement('a');
+    link.download = 'rocknews-my10bands-poster.png';
+    link.href = URL.createObjectURL(window.posterBlob);
+    link.click();
+  });
+
+  document.getElementById('shareNative').addEventListener('click', async () => {
+    if (!window.posterBlob) return;
+    const file = new File([window.posterBlob], 'rocknews-my10bands-poster.png', { type: 'image/png' });
+    const text = buildShareText();
+    if (navigator.share) {
+      try {
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text, title: 'My 10 Bands' });
+        } else {
+          await navigator.share({ text, title: 'My 10 Bands' });
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') alert('Share failed.');
+      }
+    } else {
+      alert('Native share not available. Use Download and attach the image manually.');
+    }
+  });
+
+  document.getElementById('shareX').addEventListener('click', async () => {
+    if (!window.posterBlob) return;
+    const file = new File([window.posterBlob], 'rocknews-my10bands-poster.png', { type: 'image/png' });
+    const text = buildShareText();
+
+    // Prefer native share so the image can be attached
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], text, title: 'My 10 Bands' });
+        return;
+      } catch (e) {
+        if (e.name === 'AbortError') return;
+      }
+    }
+
+    // Fallback: open X with text only + remind to attach image
+    const encoded = encodeURIComponent(text);
+    window.open(`https://twitter.com/intent/tweet?text=${encoded}`, '_blank');
+    alert('X can’t attach the image from a link. Download the poster and add it to your post.');
+  });
+
+  document.getElementById('copyText').addEventListener('click', () => {
+    navigator.clipboard.writeText(buildShareText()).then(() => {
+      const btn = document.getElementById('copyText');
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = orig, 1500);
+    });
+  });
+}
+
+async function searchBands(query) {
+  try {
+    resultsEl.innerHTML = '<div class="loading">Searching…</div>';
+
+    // Retry a few times on 503 (MusicBrainz rate limit)
+    let res;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      res = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${encodeURIComponent(query)}&fmt=json&limit=12`);
+      if (res.status !== 503) break;
+      await new Promise(r => setTimeout(r, 900 * (attempt + 1)));
+    }
+    if (!res.ok) throw new Error(`Search failed (${res.status})`);
+
+    const data = await res.json();
+    const artists = (data.artists || []).filter(a => a.name && a.score >= 70);
+
+    if (artists.length === 0) {
+      resultsEl.innerHTML = '<div class="empty">No bands found</div>';
+      return;
+    }
+
+    resultsEl.innerHTML = '<div class="loading">Loading photos…</div>';
+    const results = [];
+
+    for (const artist of artists.slice(0, 8)) {
+      const image = await getArtistImage(artist.name, artist.disambiguation);
+      results.push({
+        id: artist.id,
+        name: artist.name,
+        type: artist.type || 'Artist',
+        disambiguation: artist.disambiguation || '',
+        image
+      });
+      await new Promise(r => setTimeout(r, 120));
+    }
+
+    resultsEl.innerHTML = '';
+    results.forEach(band => {
+      const div = document.createElement('div');
+      div.className = 'result';
+      const img = band.image ? `<img src="${band.image}" alt="">` : `<div style="width:56px;height:56px;background:#333;border-radius:6px;"></div>`;
+      div.innerHTML = `
+        ${img}
+        <div class="result-info">
+          <div class="result-title">${escapeHtml(band.name)}</div>
+          <div class="result-meta">${escapeHtml(band.type)}${band.disambiguation ? ' · ' + escapeHtml(band.disambiguation) : ''}</div>
+        </div>
+      `;
+      div.addEventListener('click', () => selectBand(band));
+      resultsEl.appendChild(div);
+    });
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="empty">Error searching.<br><small>${escapeHtml(err.message)}</small><br><br>MusicBrainz may be rate-limiting. Wait a few seconds and try again.</div>`;
+  }
+}
+
+async function getArtistImage(name, disambiguation) {
+  const candidates = [
+    `${name} (band)`,
+    name,
+    disambiguation ? `${name} (${disambiguation})` : null,
+    `${name} (group)`,
+    `${name} (musician)`,
+  ].filter(Boolean);
+
+  for (const title of candidates) {
+    try {
+      const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+      const res = await fetch(url);
+      if (!res.ok) continue;
+      const data = await res.json();
+      // Skip disambiguation pages
+      if (data.type === 'disambiguation') continue;
+      const img = data.thumbnail?.source || data.originalimage?.source;
+      if (img) return img;
+    } catch {}
+  }
+  return null;
+}
+
+function selectBand(band) {
+  if (activeSlot === null) return;
+  slots[activeSlot] = band;
+  closeSearch();
+  renderGrid();
+  updateCount();
+  saveState();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+async function createPoster() {
+  createBtn.disabled = true;
+  createBtn.textContent = 'Generating…';
+  try {
+    const canvas = document.createElement('canvas');
+    const scale = 2;
+    // Wider poster for 5 columns
+    const W = 1400 * scale;
+    const H = 900 * scale;
+    canvas.width = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const linkPromise = createShareLink().catch(() => null);
+    const isLight = ['paper', 'cream'].includes(currentTheme.id);
+    const textColor = isLight ? '#1a1510' : '#f5f2ee';
+    const mutedColor = isLight ? '#6a6358' : '#a39e96';
+
+    // Background
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    const tc = THEME_COLORS[currentTheme.id] || THEME_COLORS.dark;
+    grad.addColorStop(0, tc[0]); grad.addColorStop(1, tc[1]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Header
+    ctx.fillStyle = textColor;
+    ctx.font = `bold ${36*scale}px system-ui, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('MY 10 BANDS', W/2, 70*scale);
+    ctx.fillStyle = '#e3242b';
+    ctx.font = `800 ${14*scale}px system-ui, sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.fillText('ROCK NEWS UK', 40*scale, 40*scale);
+    ctx.textAlign = 'center';
+    ctx.fillStyle = mutedColor;
+    ctx.font = `${16*scale}px system-ui, sans-serif`;
+    ctx.fillText('The bands that changed my life', W/2, 100*scale);
+
+    const margin = 40 * scale;
+    const gap = 14 * scale;
+    const cols = 5;
+    const rows = 2;
+    const gridW = W - margin * 2;
+    const tile = (gridW - gap * (cols - 1)) / cols;
+    const startY = 130 * scale;
+
+    for (let i = 0; i < TOTAL; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x = margin + col * (tile + gap);
+      const y = startY + row * (tile + gap);
+      const band = slots[i];
+
+      ctx.fillStyle = isLight ? '#fff' : '#1a1a1a';
+      ctx.fillRect(x, y, tile, tile);
+
+      if (band && band.image) {
+        try {
+          const img = await loadImage(band.image);
+          ctx.drawImage(img, x, y, tile, tile);
+        } catch (e) {
+          // Image failed (CORS or load error) — keep the solid background
+        }
+      }
+
+      if (band) {
+        const nameH = 48 * scale;
+        const g = ctx.createLinearGradient(0, y + tile - nameH, 0, y + tile);
+        g.addColorStop(0, 'rgba(0,0,0,0)');
+        g.addColorStop(1, 'rgba(0,0,0,0.85)');
+        ctx.fillStyle = g;
+        ctx.fillRect(x, y + tile - nameH, tile, nameH);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = `bold ${15*scale}px system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        wrapText(ctx, band.name, x + tile/2, y + tile - 16*scale, tile - 12*scale, 16*scale);
+      }
+    }
+
+    const name = SHARE_ID ? '' : nameInput.value.trim();
+    if (name) {
+      ctx.fillStyle = textColor;
+      ctx.font = `600 ${18*scale}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(name, W/2, H - 40*scale);
+    }
+    ctx.fillStyle = mutedColor;
+    ctx.font = `${12*scale}px system-ui, sans-serif`;
+    ctx.fillStyle = '#e3242b';
+    ctx.font = `700 ${14*scale}px system-ui, sans-serif`;
+    ctx.fillText('rocknews.co.uk  ·  Rock News UK  ·  My 10 Bands', W/2, H - 16*scale);
+
+    const dataUrl = canvas.toDataURL('image/png');
+    document.getElementById('posterPreview').src = dataUrl;
+    window.posterBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    document.getElementById('posterModal').classList.add('open');
+    document.getElementById('shareLink').value = ''; document.getElementById('copyLink').disabled = true;
+    shareUrl = await linkPromise;
+    if (shareUrl) { document.getElementById('shareLink').value = shareUrl; document.getElementById('copyLink').disabled = false; }
+    else document.getElementById('shareLink').placeholder = 'Share link unavailable — try again';
+  } catch (err) {
+    alert('Could not generate poster: ' + err.message);
+  } finally {
+    createBtn.disabled = false;
+    createBtn.textContent = 'Create poster';
+    if (!SHARE_ID) updateCount();
+  }
+}
+
+function buildShareText() {
+  const bands = slots.filter(Boolean).map(b => b.name).join(', ');
+  const name = SHARE_ID ? '' : nameInput.value.trim();
+  let text = `The 10 bands that changed my life: ${bands}`;
+  if (name) text += `\n— ${name}`;
+  text += '\n\nMade with My 10 Bands by Rock News UK · rocknews.co.uk';
+  if (shareUrl) text += '\n' + shareUrl;
+  return text;
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  let lines = [];
+  for (let w of words) {
+    const test = line + w + ' ';
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line.trim());
+      line = w + ' ';
+    } else line = test;
+  }
+  lines.push(line.trim());
+  if (lines.length > 2) lines = [lines[0], lines.slice(1).join(' ')];
+  const startY = y - (lines.length - 1) * lineHeight / 2;
+  lines.forEach((l, i) => ctx.fillText(l, x, startY + i * lineHeight));
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('image load failed'));
+    setTimeout(() => reject(new Error('image timeout')), 8000);
+    img.src = src;
+  });
+}
+
+init();
+</script>
+</body>
+</html>
