@@ -776,7 +776,7 @@ async function createPoster() {
     const cols = 5;
     const rows = 2;
     const startY = 110 * scale;
-    const footerH = 230 * scale;
+    const footerH = 260 * scale;
     const gridW = W - margin * 2;
     const gridH = H - startY - footerH;
     let tile = (gridW - gap * (cols - 1)) / cols;
@@ -826,15 +826,29 @@ async function createPoster() {
       ctx.textBaseline = 'alphabetic';
       ctx.fillText(name, W/2, H - 175*scale);
     }
-    // Fill entire footer band under the grid
+    // Fit brand lines to almost full canvas width in the footer band
+    const brand1 = 'www.RockNews.co.uk';
+    const brand2 = 'The home of Rock';
+    const maxW = W - 60 * scale;
+    function fitFont(weight, startPx, text) {
+      let size = startPx;
+      while (size > 20 * scale) {
+        ctx.font = `${weight} ${size}px system-ui, sans-serif`;
+        if (ctx.measureText(text).width <= maxW) break;
+        size -= 2 * scale;
+      }
+      return size;
+    }
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    const s1 = fitFont('900', 140 * scale, brand1);
     ctx.fillStyle = '#e3242b';
-    ctx.font = `900 ${96*scale}px system-ui, sans-serif`;
-    ctx.fillText('www.RockNews.co.uk', W/2, H - 110*scale);
+    ctx.font = `900 ${s1}px system-ui, sans-serif`;
+    ctx.fillText(brand1, W/2, H - 120 * scale);
+    const s2 = fitFont('800', Math.round(s1 * 0.62), brand2);
     ctx.fillStyle = textColor;
-    ctx.font = `800 ${56*scale}px system-ui, sans-serif`;
-    ctx.fillText('The home of Rock', W/2, H - 42*scale);
+    ctx.font = `800 ${s2}px system-ui, sans-serif`;
+    ctx.fillText(brand2, W/2, H - 45 * scale);
     ctx.textBaseline = 'alphabetic';
 
     const dataUrl = canvas.toDataURL('image/png');
