@@ -611,36 +611,18 @@ async function searchBands(query) {
   try {
     resultsEl.innerHTML = '<div class="loading">Searching…</div>';
 
-    // Retry a few times on 503 (MusicBrainz rate limit)
-    let res;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      res = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${encodeURIComponent(query)}&fmt=json&limit=12`);
-      if (res.status !== 503) break;
-      await new Promise(r => setTimeout(r, 900 * (attempt + 1)));
+    const res = await fetch('/api/search?q=' + encodeURIComponent(query));
+    if (res.status === 503) throw new Error('Search busy — wait a second and try again');
+    if (!res.ok) {
+      let msg = `Search failed (${res.status})`;
+      try { const e = await res.json(); if (e.error) msg = e.error; } catch (_) {}
+      throw new Error(msg);
     }
-    if (!res.ok) throw new Error(`Search failed (${res.status})`);
-
     const data = await res.json();
-    const artists = (data.artists || []).filter(a => a.name && a.score >= 70);
-
-    if (artists.length === 0) {
+    const results = data.results || [];
+    if (results.length === 0) {
       resultsEl.innerHTML = '<div class="empty">No bands found</div>';
       return;
-    }
-
-    resultsEl.innerHTML = '<div class="loading">Loading photos…</div>';
-    const results = [];
-
-    for (const artist of artists.slice(0, 8)) {
-      const image = await getArtistImage(artist.name, artist.disambiguation);
-      results.push({
-        id: artist.id,
-        name: artist.name,
-        type: artist.type || 'Artist',
-        disambiguation: artist.disambiguation || '',
-        image
-      });
-      await new Promise(r => setTimeout(r, 120));
     }
 
     resultsEl.innerHTML = '';
@@ -659,7 +641,7 @@ async function searchBands(query) {
       resultsEl.appendChild(div);
     });
   } catch (err) {
-    resultsEl.innerHTML = `<div class="empty">Error searching.<br><small>${escapeHtml(err.message)}</small><br><br>MusicBrainz may be rate-limiting. Wait a few seconds and try again.</div>`;
+    resultsEl.innerHTML = `<div class="empty">Error searching.<br><small>${escapeHtml(err.message)}</small><br><br>Wait a second and try again.</div>`;
   }
 }
 
