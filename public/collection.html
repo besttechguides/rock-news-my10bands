@@ -840,14 +840,14 @@ async function createPoster() {
     }
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const s1 = fitFont('900', 140 * scale, brand1);
+    const s1 = fitFont('900', 120 * scale, brand1);
     ctx.fillStyle = '#e3242b';
     ctx.font = `900 ${s1}px system-ui, sans-serif`;
-    ctx.fillText(brand1, W/2, H - 120 * scale);
-    const s2 = fitFont('800', Math.round(s1 * 0.62), brand2);
+    ctx.fillText(brand1, W/2, H - 125 * scale);
+    const s2 = fitFont('800', Math.round(s1 * 0.48), brand2);
     ctx.fillStyle = textColor;
     ctx.font = `800 ${s2}px system-ui, sans-serif`;
-    ctx.fillText(brand2, W/2, H - 45 * scale);
+    ctx.fillText(brand2, W/2, H - 48 * scale);
     ctx.textBaseline = 'alphabetic';
 
     const dataUrl = canvas.toDataURL('image/png');
