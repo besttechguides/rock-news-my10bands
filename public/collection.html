@@ -703,6 +703,24 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
+
+async function uploadPosterForShare(shareId, sourceCanvas) {
+  try {
+    const og = document.createElement('canvas');
+    og.width = 1200;
+    og.height = Math.round(1200 * (900 / 1400));
+    og.getContext('2d').drawImage(sourceCanvas, 0, 0, og.width, og.height);
+    const dataUrl = og.toDataURL('image/jpeg', 0.82);
+    await fetch('/api/poster?id=' + encodeURIComponent(shareId), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: dataUrl }),
+    });
+  } catch (e) {
+    console.warn('poster upload failed', e);
+  }
+}
+
 async function createPoster() {
   createBtn.disabled = true;
   createBtn.textContent = 'Generating…';
@@ -805,8 +823,12 @@ async function createPoster() {
     document.getElementById('posterModal').classList.add('open');
     document.getElementById('shareLink').value = ''; document.getElementById('copyLink').disabled = true;
     shareUrl = await linkPromise;
-    if (shareUrl) { document.getElementById('shareLink').value = shareUrl; document.getElementById('copyLink').disabled = false; }
-    else document.getElementById('shareLink').placeholder = 'Share link unavailable — try again';
+    if (shareUrl) {
+      document.getElementById('shareLink').value = shareUrl;
+      document.getElementById('copyLink').disabled = false;
+      const sid = shareUrl.split('/p/').pop();
+      if (sid) await uploadPosterForShare(sid, canvas);
+    } else document.getElementById('shareLink').placeholder = 'Share link unavailable — try again';
   } catch (err) {
     alert('Could not generate poster: ' + err.message);
   } finally {

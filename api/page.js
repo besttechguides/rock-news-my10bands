@@ -23,14 +23,20 @@ module.exports = async (req, res) => {
     let image = `${SITE}/og.png`;
     let names = 'My 10 Bands';
     try {
+      const poster = await head(`shares/${id}.jpg`);
+      if (poster && poster.url) image = poster.url;
+    } catch (_) {}
+    try {
       const meta = await head(`shares/${id}.json`);
       const r = await fetch(meta.url);
       if (r.ok) {
         const d = await r.json();
         bands = d.bands || [];
         names = bands.map(b => b.name).filter(Boolean).slice(0, 10).join(', ') || names;
-        const firstImg = bands.find(b => b && b.image);
-        if (firstImg && firstImg.image) image = firstImg.image;
+        if (image === `${SITE}/og.png`) {
+          const firstImg = bands.find(b => b && b.image);
+          if (firstImg && firstImg.image) image = firstImg.image;
+        }
       }
     } catch (_) {}
 
