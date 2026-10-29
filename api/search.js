@@ -1,7 +1,7 @@
 const UA = 'RockNewsMy10Bands/1.0 (https://www.rocknews.co.uk/; contact@rocknews.co.uk)';
 
 module.exports = async (req, res) => {
-  res.setHeader('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=86400');
+  res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=86400');
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'GET') {
@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
   try {
     const q = String(req.query.q || '').trim().slice(0, 80);
     if (q.length < 2) return res.status(400).json({ error: 'query too short' });
+    const withImages = String(req.query.images || '') === '1';
 
     let mbRes;
     for (let attempt = 0; attempt < 4; attempt++) {
@@ -19,7 +20,7 @@ module.exports = async (req, res) => {
         { headers: { 'User-Agent': UA, Accept: 'application/json' } }
       );
       if (mbRes.status !== 503 && mbRes.status !== 429) break;
-      await new Promise(r => setTimeout(r, 700 * (attempt + 1)));
+      await new Promise(r => setTimeout(r, 500 * (attempt + 1)));
     }
     if (!mbRes.ok) {
       return res.status(mbRes.status === 503 || mbRes.status === 429 ? 503 : 502).json({
@@ -28,6 +29,18 @@ module.exports = async (req, res) => {
     }
     const data = await mbRes.json();
     const artists = (data.artists || []).filter(a => a.name && (a.score == null || a.score >= 70)).slice(0, 8);
+
+    if (!withImages) {
+      return res.status(200).json({
+        results: artists.map(a => ({
+          id: a.id,
+          name: a.name,
+          type: a.type || 'Artist',
+          disambiguation: a.disambiguation || '',
+          image: null,
+        })),
+      });
+    }
 
     const results = await Promise.all(artists.map(async (artist) => ({
       id: artist.id,
@@ -44,11 +57,7 @@ module.exports = async (req, res) => {
 };
 
 async function getArtistImage(name, disambiguation) {
-  const candidates = [
-    `${name} (band)`,
-    name,
-    disambiguation ? `${name} (${disambiguation})` : null,
-  ].filter(Boolean);
+  const candidates = [`${name} (band)`, name, disambiguation ? `${name} (${disambiguation})` : null].filter(Boolean);
   for (const title of candidates) {
     try {
       const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
