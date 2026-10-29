@@ -29,18 +29,13 @@ module.exports = async (req, res) => {
     const data = await mbRes.json();
     const artists = (data.artists || []).filter(a => a.name && (a.score == null || a.score >= 70)).slice(0, 8);
 
-    const results = [];
-    for (const artist of artists) {
-      const image = await getArtistImage(artist.name, artist.disambiguation);
-      results.push({
-        id: artist.id,
-        name: artist.name,
-        type: artist.type || 'Artist',
-        disambiguation: artist.disambiguation || '',
-        image,
-      });
-      await new Promise(r => setTimeout(r, 80));
-    }
+    const results = await Promise.all(artists.map(async (artist) => ({
+      id: artist.id,
+      name: artist.name,
+      type: artist.type || 'Artist',
+      disambiguation: artist.disambiguation || '',
+      image: await getArtistImage(artist.name, artist.disambiguation),
+    })));
     return res.status(200).json({ results });
   } catch (e) {
     console.error(e);
@@ -53,8 +48,6 @@ async function getArtistImage(name, disambiguation) {
     `${name} (band)`,
     name,
     disambiguation ? `${name} (${disambiguation})` : null,
-    `${name} (group)`,
-    `${name} (musician)`,
   ].filter(Boolean);
   for (const title of candidates) {
     try {
