@@ -37,6 +37,8 @@ module.exports = async (req, res) => {
     return res.status(405).end();
   } catch (e) {
     console.error(e);
-    return res.status(500).json({ error: 'server error' });
+    const msg = (e && e.message) ? String(e.message).slice(0, 300) : 'server error';
+    const missing = !process.env.BLOB_READ_WRITE_TOKEN;
+    return res.status(500).json({ error: missing ? 'BLOB_READ_WRITE_TOKEN missing — connect a Blob store to this project and redeploy' : msg });
   }
 };
