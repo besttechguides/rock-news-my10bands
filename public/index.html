@@ -717,11 +717,21 @@ function escapeHtml(str) {
 
 async function uploadPosterForShare(shareId, sourceCanvas) {
   try {
+    // Facebook OG is ~1.91:1 and often crops edges — letterbox with padding
+    const ogW = 1200, ogH = 630;
     const og = document.createElement('canvas');
-    og.width = 1200;
-    og.height = Math.round(1200 * (900 / 1400));
-    og.getContext('2d').drawImage(sourceCanvas, 0, 0, og.width, og.height);
-    const dataUrl = og.toDataURL('image/jpeg', 0.82);
+    og.width = ogW; og.height = ogH;
+    const octx = og.getContext('2d');
+    octx.fillStyle = '#140203';
+    octx.fillRect(0, 0, ogW, ogH);
+    const padX = 36, padY = 28;
+    const availW = ogW - padX * 2, availH = ogH - padY * 2;
+    const srcR = sourceCanvas.width / sourceCanvas.height;
+    let dw = availW, dh = dw / srcR;
+    if (dh > availH) { dh = availH; dw = dh * srcR; }
+    const dx = (ogW - dw) / 2, dy = (ogH - dh) / 2;
+    octx.drawImage(sourceCanvas, dx, dy, dw, dh);
+    const dataUrl = og.toDataURL('image/jpeg', 0.85);
     await fetch('/api/poster?id=' + encodeURIComponent(shareId), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
