@@ -335,6 +335,7 @@
       </div>
       <div style="display:flex; gap:8px;">
         <button class="btn btn-secondary" id="shareX" style="flex:1; font-size:0.9rem;">Post on X</button>
+        <button class="btn btn-secondary" id="shareFacebook" style="flex:1; font-size:0.9rem;">Share on Facebook</button>
         <button class="btn btn-secondary" id="copyText" style="flex:1; font-size:0.9rem;">Copy text</button>
       </div>
       <div id="shareLinkRow" style="display:flex; gap:8px;">
@@ -586,6 +587,14 @@ function bindPosterEvents() {
     const encoded = encodeURIComponent(text);
     window.open(`https://x.com/intent/post?text=${encoded}`, '_blank', 'noopener,noreferrer');
     alert('X is open with your caption. Download the poster and attach the PNG to the post.');
+  });
+
+  document.getElementById('shareFacebook').addEventListener('click', () => {
+    if (!window.posterBlob) return;
+    const link = shareUrl || location.origin + '/';
+    const u = encodeURIComponent(link);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}`, '_blank', 'noopener,noreferrer');
+    alert('Facebook is open with your poster link. Download the PNG and add it to the post if you want the image with it.');
   });
 
   document.getElementById('copyText').addEventListener('click', () => {
