@@ -591,8 +591,11 @@ function bindPosterEvents() {
 
   document.getElementById('shareFacebook').addEventListener('click', () => {
     if (!window.posterBlob) return;
-    const link = shareUrl || location.origin + '/';
-    const u = encodeURIComponent(link);
+    if (!shareUrl) {
+      alert('Wait a second for the share link to appear, then try Facebook again.');
+      return;
+    }
+    const u = encodeURIComponent(shareUrl);
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}`, '_blank', 'noopener,noreferrer');
     alert('Facebook is open with your poster link. Download the PNG and add it to the post if you want the image with it.');
   });

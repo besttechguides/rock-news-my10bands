@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Rock News UK" />
+<meta property="og:title" content="My 10 Bands — Rock News UK" />
+<meta property="og:description" content="Pick the 10 bands that changed your life and share a Rock News poster." />
+<meta property="og:url" content="https://rock-news-my10bands.vercel.app/" />
+<meta property="og:image" content="https://rock-news-my10bands.vercel.app/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="My 10 Bands — Rock News UK" />
+<meta name="twitter:description" content="Pick the 10 bands that changed your life and share a Rock News poster." />
+<meta name="twitter:image" content="https://rock-news-my10bands.vercel.app/og.png" />
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My 10 Bands — Rock News UK</title>
@@ -591,8 +602,11 @@ function bindPosterEvents() {
 
   document.getElementById('shareFacebook').addEventListener('click', () => {
     if (!window.posterBlob) return;
-    const link = shareUrl || location.origin + '/';
-    const u = encodeURIComponent(link);
+    if (!shareUrl) {
+      alert('Wait a second for the share link to appear, then try Facebook again.');
+      return;
+    }
+    const u = encodeURIComponent(shareUrl);
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}`, '_blank', 'noopener,noreferrer');
     alert('Facebook is open with your poster link. Download the PNG and add it to the post if you want the image with it.');
   });

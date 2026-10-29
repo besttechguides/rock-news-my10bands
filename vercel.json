@@ -1,5 +1,9 @@
 {
   "cleanUrls": true,
-  "rewrites": [{ "source": "/p/:id", "destination": "/p.html" }],
-  "headers": [{ "source": "/p/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }]
+  "rewrites": [
+    { "source": "/p/:id", "destination": "/api/page?id=:id" }
+  ],
+  "headers": [
+    { "source": "/p/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
+  ]
 }
